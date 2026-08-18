@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
@@ -14,7 +14,7 @@ const DEFAULT_CAR_PICKS = [
   DEMO_VEHICLES.find((v) => v.id === "car-maruti-brezza") || DEMO_VEHICLES[1],
 ].filter(Boolean) as Vehicle[];
 
-export default function ComparePage() {
+function CompareContent() {
   const { t, locale } = useLanguage();
   const searchParams = useSearchParams();
   const v1Param = searchParams.get("v1");
@@ -58,184 +58,167 @@ export default function ComparePage() {
   }
 
   function removeVehicle(id: string) {
-    setSelected(selected.filter((v) => v.id !== id));
+    if (selected.length > 1) {
+      setSelected(selected.filter((v) => v.id !== id));
+    }
   }
 
   const specRows = [
-    { key: "price", label: t("compare.price") },
-    { key: "fuel", label: t("compare.fuel") },
-    { key: "mileage", label: t("compare.mileage") },
-    { key: "engine", label: "Engine / Power" },
-    { key: "rating", label: t("compare.rating") },
-    { key: "safety", label: "Safety Rating" },
-    { key: "body", label: t("compare.bodyType") },
+    {
+      label: t("compare.priceOnRoad"),
+      getValue: (v: Vehicle) => (v.priceOnRoad > 0 ? formatLakh(v.priceOnRoad) : "Price on Request"),
+    },
+    {
+      label: t("compare.fuelType"),
+      getValue: (v: Vehicle) => v.fuelType?.toUpperCase() || (v.isElectric ? "ELECTRIC" : "PETROL"),
+    },
+    {
+      label: t("compare.mileage"),
+      getValue: (v: Vehicle) => v.mileage || v.spec[locale] || "—",
+    },
+    {
+      label: t("compare.bodyType"),
+      getValue: (v: Vehicle) => v.bodyType.toUpperCase(),
+    },
+    {
+      label: t("compare.condition"),
+      getValue: (v: Vehicle) => (v.condition === "new" ? t("search.new") : t("search.used")),
+    },
+    {
+      label: t("compare.city"),
+      getValue: (v: Vehicle) => v.city,
+    },
   ];
-
-  function getSpecValue(vehicle: Vehicle, key: string): string {
-    switch (key) {
-      case "price":
-        return vehicle.priceRangeMax
-          ? `${formatLakh(vehicle.priceOnRoad)} - ${formatLakh(vehicle.priceRangeMax)}`
-          : formatLakh(vehicle.priceOnRoad);
-      case "fuel":
-        return vehicle.fuelType ? vehicle.fuelType.toUpperCase() : "Petrol / Diesel";
-      case "mileage":
-        return vehicle.mileage || (vehicle.type === "bike" ? "45 kmpl" : "18.5 kmpl");
-      case "engine":
-        return vehicle.spec ? vehicle.spec[locale] || vehicle.spec.en : "1199 cc · 120 PS";
-      case "rating":
-        return vehicle.rating ? `★ ${vehicle.rating}` : "★ 4.6 (864 reviews)";
-      case "safety":
-        return vehicle.type === "car" ? "5 Star (Global NCAP)" : "Dual Channel ABS";
-      case "body":
-        return vehicle.bodyType ? vehicle.bodyType.toUpperCase() : "SUV";
-      default:
-        return "—";
-    }
-  }
 
   return (
     <SiteLayout>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold text-ink">{t("compare.title")}</h1>
             <p className="mt-1 text-sm text-ink/50">{t("compare.subtitle")}</p>
           </div>
-
-          <div className="flex rounded-xl bg-paper p-1 border border-line">
+          <div className="flex gap-2">
             <button
               onClick={() => {
                 setFilterType("car");
-                const carPicks = DEMO_VEHICLES.filter((v) => v.type === "car").slice(0, 2);
-                if (carPicks.length > 0) setSelected(carPicks);
+                setSelected(DEFAULT_CAR_PICKS);
               }}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition ${
-                filterType === "car" ? "bg-highway text-white shadow-sm" : "text-ink/60"
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
+                filterType === "car" ? "bg-highway text-white" : "border border-line bg-surface text-ink hover:bg-paper"
               }`}
             >
-              Compare Cars
+              {t("nav.cars")}
             </button>
             <button
               onClick={() => {
                 setFilterType("bike");
                 const bikePicks = DEMO_VEHICLES.filter((v) => v.type === "bike").slice(0, 2);
-                if (bikePicks.length > 0) setSelected(bikePicks);
+                setSelected(bikePicks);
               }}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition ${
-                filterType === "bike" ? "bg-highway text-white shadow-sm" : "text-ink/60"
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
+                filterType === "bike" ? "bg-highway text-white" : "border border-line bg-surface text-ink hover:bg-paper"
               }`}
             >
-              Compare Bikes
+              {t("nav.bikes")}
             </button>
           </div>
         </div>
 
-        {/* Selected Vehicles Cards Header */}
-        <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
+        {/* Vehicles Grid Header */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           {selected.map((vehicle) => (
-            <div key={vehicle.id} className="card w-56 shrink-0 p-4 relative group">
-              <button
-                onClick={() => removeVehicle(vehicle.id)}
-                className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-paper text-xs text-ink/40 hover:bg-coral/10 hover:text-coral transition"
-                title="Remove from comparison"
-              >
-                ✕
-              </button>
-              <VehiclePhoto
-                searchTerm={vehicle.name.en}
-                vehicleType={vehicle.type}
-                bodyType={vehicle.bodyType}
-                brand={vehicle.brand}
-                modelName={vehicle.modelName}
-                officialImageUrl={vehicle.officialImageUrl}
-                className="h-28 w-full rounded-xl object-cover"
-              />
-              <p className="mt-3 text-sm font-bold text-ink truncate">{vehicle.name[locale]}</p>
-              <p className="font-mono text-xs font-bold text-highway">{formatLakh(vehicle.priceOnRoad)}</p>
+            <div key={vehicle.id} className="relative rounded-2xl border border-line bg-surface p-4 shadow-sm">
+              {selected.length > 1 && (
+                <button
+                  onClick={() => removeVehicle(vehicle.id)}
+                  className="absolute right-3 top-3 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-paper text-ink/40 hover:bg-line hover:text-ink"
+                  title="Remove vehicle"
+                >
+                  ✕
+                </button>
+              )}
+              <div className="aspect-[16/10] overflow-hidden rounded-xl bg-paper">
+                <VehiclePhoto vehicle={vehicle} />
+              </div>
+              <h3 className="mt-3 font-display text-base font-bold text-ink">{vehicle.name[locale]}</h3>
+              <p className="font-mono text-sm font-bold text-marigold-dark">
+                {vehicle.priceOnRoad > 0 ? formatLakh(vehicle.priceOnRoad) : "Price on Request"}
+              </p>
             </div>
           ))}
+
+          {/* Add Slot if less than 4 */}
           {selected.length < MAX_COMPARE && (
-            <div className="flex h-44 w-56 shrink-0 items-center justify-center rounded-2xl border-2 border-dashed border-line text-xs font-semibold text-ink/40 p-4 text-center">
-              + {t("compare.addVehicle")} (Up to {MAX_COMPARE})
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-paper/50 p-6 text-center">
+              <span className="text-2xl text-ink/30">+</span>
+              <p className="mt-1 text-xs font-medium text-ink/50">{t("compare.addVehicle")}</p>
             </div>
           )}
         </div>
 
-        {/* Comparison Matrix Table */}
-        {selected.length >= 2 && (
-          <div className="mt-8 overflow-x-auto rounded-2xl border border-line bg-surface shadow-sm">
-            <table className="w-full min-w-[640px] text-xs sm:text-sm">
-              <thead>
-                <tr className="border-b border-line bg-paper/60">
-                  <th className="p-4 text-left font-bold uppercase tracking-wider text-ink/50 w-44">
-                    Specification
-                  </th>
-                  {selected.map((v) => (
-                    <th key={v.id} className="p-4 text-left font-display font-bold text-ink">
-                      {v.name[locale]}
-                    </th>
+        {/* Comparison Specs Table */}
+        <div className="mt-8 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+          <table className="w-full text-left text-sm">
+            <tbody className="divide-y divide-line">
+              {specRows.map((row) => (
+                <tr key={row.label} className="hover:bg-paper/50">
+                  <td className="w-1/4 bg-paper px-4 py-3.5 font-medium text-ink/70 sm:px-6">{row.label}</td>
+                  {selected.map((vehicle) => (
+                    <td key={vehicle.id} className="px-4 py-3.5 font-mono text-sm font-semibold text-ink sm:px-6">
+                      {row.getValue(vehicle)}
+                    </td>
+                  ))}
+                  {Array.from({ length: MAX_COMPARE - selected.length }).map((_, i) => (
+                    <td key={i} className="px-4 py-3.5 text-center text-xs text-ink/20">
+                      —
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-line/60">
-                {specRows.map((row) => (
-                  <tr key={row.key} className="hover:bg-paper/40 transition">
-                    <td className="p-4 font-semibold text-ink/60">{row.label}</td>
-                    {selected.map((v) => (
-                      <td key={v.id} className="p-4 font-medium text-ink">
-                        {getSpecValue(v, row.key)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Available to Add Selector */}
+        {selected.length < MAX_COMPARE && (
+          <div className="mt-10 rounded-2xl border border-line bg-surface p-6 shadow-sm">
+            <h2 className="font-display text-lg font-bold text-ink">{t("compare.selectMore")}</h2>
+            <div className="mt-4 flex gap-4">
+              <input
+                type="text"
+                placeholder={t("search.placeholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full max-w-md rounded-xl border border-line bg-paper px-4 py-2 text-sm outline-none focus:border-highway"
+              />
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6">
+              {available.slice(0, 12).map((v) => (
+                <button
+                  key={v.id}
+                  onClick={() => addVehicle(v)}
+                  className="flex flex-col items-center rounded-xl border border-line bg-paper p-2.5 text-center transition hover:border-highway hover:bg-surface hover:shadow-sm"
+                >
+                  <span className="line-clamp-1 text-xs font-bold text-ink">{v.name[locale]}</span>
+                  <span className="font-mono text-[11px] text-marigold-dark">
+                    {v.priceOnRoad > 0 ? formatLakh(v.priceOnRoad) : "Specs"}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
-
-        {/* Add more vehicles section */}
-        <div className="mt-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3">
-            <h2 className="font-display text-lg font-bold text-ink">
-              Add more {filterType === "car" ? "Cars" : "Bikes"} to compare
-            </h2>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Search ${filterType === "car" ? "cars" : "bikes"} (e.g. Swift, Nexon, Thar...)`}
-              className="w-full max-w-xs rounded-xl border border-line bg-surface px-3 py-2 text-xs outline-none focus:border-highway shadow-sm"
-            />
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {available.slice(0, 8).map((vehicle) => (
-              <button
-                key={vehicle.id}
-                onClick={() => addVehicle(vehicle)}
-                disabled={selected.length >= MAX_COMPARE}
-                className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 text-left transition hover:shadow-card hover:border-highway disabled:opacity-40"
-              >
-                <VehiclePhoto
-                  searchTerm={vehicle.name.en}
-                  vehicleType={vehicle.type}
-                  bodyType={vehicle.bodyType}
-                  brand={vehicle.brand}
-                  modelName={vehicle.modelName}
-                  officialImageUrl={vehicle.officialImageUrl}
-                  className="h-14 w-20 rounded-lg object-cover shrink-0"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-ink truncate">{vehicle.name[locale]}</p>
-                  <p className="font-mono text-[11px] font-semibold text-highway">{formatLakh(vehicle.priceOnRoad)}</p>
-                  <span className="text-[10px] font-bold text-highway mt-0.5 inline-block">+ Add to Compare</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </SiteLayout>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-sm text-ink/50">Loading comparison tool…</div>}>
+      <CompareContent />
+    </Suspense>
   );
 }
