@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BodyType, VehicleType } from "@/lib/vehicles";
-import { VehicleIllustration } from "./VehicleIllustration";
+import { getCuratedVehiclePhoto } from "@/lib/curatedVehicleImages";
 
 interface Props {
   searchTerm: string;
@@ -10,7 +10,6 @@ interface Props {
   bodyType: BodyType;
   brand?: string;
   modelName?: string;
-  /** Pre-resolved live image (from /api/catalog). Local /uploads paths are ignored. */
   officialImageUrl?: string;
   className?: string;
 }
@@ -19,11 +18,6 @@ function isLocalUpload(url?: string): boolean {
   return !!url && (url.startsWith("/uploads/") || url.includes("/uploads/vehicles/"));
 }
 
-/**
- * Live-first vehicle imagery:
- *   1. CarDekho / BikeDekho photo via /api/media/vehicle (or catalog preload)
- *   2. SVG silhouette fallback
- */
 export function VehiclePhoto({
   searchTerm,
   vehicleType,
@@ -33,72 +27,50 @@ export function VehiclePhoto({
   officialImageUrl,
   className = "",
 }: Props) {
-  const [liveUrl, setLiveUrl] = useState<string | null>(
-    officialImageUrl && !isLocalUpload(officialImageUrl) ? officialImageUrl : null
-  );
-  const [failed, setFailed] = useState(false);
-  const [loading, setLoading] = useState(!liveUrl && !!brand && !!modelName);
+  // 1. Check curated high-resolution photography first (guaranteed 100% cloud uptime)
+  const curatedPhoto = getCuratedVehiclePhoto({
+    brand,
+    model: modelName || searchTerm,
+    vehicleType,
+    bodyType,
+  });
+
+  const initialUrl = officialImageUrl && !isLocalUpload(officialImageUrl) ? officialImageUrl : curatedPhoto;
+  const [photoUrl, setPhotoUrl] = useState<string | null>(initialUrl ?? null);
 
   useEffect(() => {
     if (officialImageUrl && !isLocalUpload(officialImageUrl)) {
-      setLiveUrl(officialImageUrl);
-      setFailed(false);
-      setLoading(false);
+      setPhotoUrl(officialImageUrl);
       return;
     }
 
-    if (!brand || !modelName) {
-      setLiveUrl(null);
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setLoading(true);
-    setFailed(false);
-
-    const params = new URLSearchParams({
+    const fallback = getCuratedVehiclePhoto({
       brand,
-      model: modelName,
-      type: vehicleType,
+      model: modelName || searchTerm,
+      vehicleType,
+      bodyType,
     });
 
-    fetch(`/api/media/vehicle?${params}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data: { imageUrl?: string } | null) => {
-        if (!cancelled) {
-          setLiveUrl(data?.imageUrl ?? null);
-          setLoading(false);
+    if (fallback) {
+      setPhotoUrl(fallback);
+    }
+  }, [brand, modelName, vehicleType, bodyType, officialImageUrl, searchTerm]);
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={photoUrl || getCuratedVehiclePhoto({ vehicleType, bodyType }) || "/assets/vehicles/ferrari-sf90.svg"}
+      alt={searchTerm || `${brand || ""} ${modelName || ""}`}
+      className={`h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105 ${className}`}
+      loading="lazy"
+      onError={(e) => {
+        // Fallback to category photo on error
+        const target = e.currentTarget;
+        const catFallback = getCuratedVehiclePhoto({ vehicleType, bodyType });
+        if (catFallback && target.src !== catFallback) {
+          target.src = catFallback;
         }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLiveUrl(null);
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [brand, modelName, vehicleType, officialImageUrl]);
-
-  if (loading) {
-    return <div className={`animate-pulse bg-line ${className}`} aria-hidden />;
-  }
-
-  if (liveUrl && !failed) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={liveUrl}
-        alt={searchTerm}
-        className={className}
-        loading="lazy"
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
-  return <VehicleIllustration vehicleType={vehicleType} bodyType={bodyType} className={className} />;
+      }}
+    />
+  );
 }

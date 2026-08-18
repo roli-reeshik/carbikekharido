@@ -2,6 +2,7 @@ import { VehicleType } from "@/lib/vehicles";
 import { getCached, setCached } from "./cache";
 import { fetchOgImageFromPage } from "./fetcher";
 import { brandToSlug, modelToSlug } from "./slugs";
+import { getCuratedVehiclePhoto } from "@/lib/curatedVehicleImages";
 
 export interface LiveVehicleImage {
   imageUrl: string;
@@ -35,6 +36,24 @@ export async function resolveLiveVehicleImage(input: {
   const cached = getCached<LiveVehicleImage>(cacheKey);
   if (cached) return cached;
 
+  // 1. Fast curated CDN photography lookup (100% cloud uptime)
+  const curated = getCuratedVehiclePhoto({
+    brand: input.brand,
+    model: input.model,
+    vehicleType: input.vehicleType,
+  });
+
+  if (curated) {
+    const result: LiveVehicleImage = {
+      imageUrl: curated,
+      sourcePage: "https://carbikekharido.com",
+      source: input.vehicleType === "bike" ? "bikedekho" : "cardekho",
+    };
+    setCached(cacheKey, result);
+    return result;
+  }
+
+  // 2. Candidate URL fallback lookup
   const brandSlug = brandToSlug(input.brand);
   const modelSlug = modelToSlug(input.model);
   const altSlugs = [
@@ -51,21 +70,31 @@ export async function resolveLiveVehicleImage(input: {
   }
 
   for (const candidate of candidates) {
-    const imageUrl = await fetchOgImageFromPage(candidate.url);
-    if (imageUrl) {
-      const result: LiveVehicleImage = {
-        imageUrl,
-        sourcePage: candidate.url,
-        source: candidate.source,
-      };
-      setCached(cacheKey, result);
-      return result;
+    try {
+      const imageUrl = await fetchOgImageFromPage(candidate.url);
+      if (imageUrl) {
+        const result: LiveVehicleImage = {
+          imageUrl,
+          sourcePage: candidate.url,
+          source: candidate.source,
+        };
+        setCached(cacheKey, result);
+        return result;
+      }
+    } catch {
+      /* continue candidates */
     }
   }
 
   return null;
 }
 
-export function proxyImageUrl(remoteUrl: string): string {
-  return `/api/media/proxy?url=${encodeURIComponent(remoteUrl)}`;
+export function proxyImageUrl(url?: string): string {
+  if (!url) return "";
+  if (url.startsWith("/") || url.startsWith("data:")) return url;
+  // If already hosted on trusted public CDNs (Wikimedia / Unsplash / S3), serve directly
+  if (url.includes("wikimedia.org") || url.includes("unsplash.com") || url.includes("amazonaws.com")) {
+    return url;
+  }
+  return `/api/media/proxy?url=${encodeURIComponent(url)}`;
 }

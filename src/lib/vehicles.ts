@@ -1,3 +1,5 @@
+import { getCuratedVehiclePhoto } from "./curatedVehicleImages";
+
 export type VehicleType = "car" | "bike";
 export type BodyType = "suv" | "hatchback" | "sedan" | "muv" | "luxury" | "commuter" | "scooter" | "sports";
 export type VehicleCondition = "new" | "used";
@@ -370,3 +372,15 @@ export function formatLakh(amount: number): string {
   if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
   return `₹${(amount / 100000).toFixed(2)} L`;
 }
+
+// Auto-enrich all demo vehicles with authoritative high-res photography
+DEMO_VEHICLES.forEach((v) => {
+  if (!v.officialImageUrl) {
+    v.officialImageUrl = getCuratedVehiclePhoto({
+      brand: v.brand,
+      model: v.modelName || v.name.en,
+      vehicleType: v.type,
+      bodyType: v.bodyType,
+    });
+  }
+});
