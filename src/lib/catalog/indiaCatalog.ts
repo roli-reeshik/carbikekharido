@@ -5,7 +5,7 @@ import { brandDisplayName, modelDisplayName } from "./names";
 import { EXCLUDED_BRAND_SLUGS, sortBrandsFeaturedFirst } from "./featuredBrands";
 import { CatalogIndex, CatalogModel, CatalogSearchFilters, CatalogVariant } from "./types";
 import { enrichModelWithVariants, fetchVariantsForModel } from "./variants";
-import { Vehicle, VehicleType, BodyType, FuelType } from "@/lib/vehicles";
+import { Vehicle, VehicleType, BodyType, FuelType, DEMO_VEHICLES } from "@/lib/vehicles";
 import { proxyImageUrl, resolveLiveVehicleImage } from "@/lib/liveMedia/vehicleImage";
 
 const DATA_DIR = path.join(process.cwd(), "data");
