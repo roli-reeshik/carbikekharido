@@ -1,0 +1,212 @@
+{
+  "brand": "CarBikeKharido.com",
+  "nav": {
+    "cars": "Cars",
+    "bikes": "Bikes",
+    "compare": "Compare",
+    "sell": "Sell",
+    "wishlist": "Wishlist",
+    "news": "News",
+    "emi": "EMI Calculator",
+    "riderFit": "Rider Fit",
+    "ownershipCost": "Running Cost",
+    "selectCity": "Select city"
+  },
+  "hero": {
+    "title": "Find your perfect ride",
+    "subtitle": "Browse 500+ cars and bikes. Compare, calculate EMI, read reviews — all without signing up.",
+    "toggleCars": "Cars",
+    "toggleBikes": "Bikes",
+    "toggleNew": "New",
+    "toggleUsed": "Used"
+  },
+  "vehicle": {
+    "onRoadPrice": "On-road price",
+    "inCity": "in {city}",
+    "viewDetails": "View details",
+    "contactSeller": "Contact seller",
+    "bookTestDrive": "Book test drive",
+    "addToWishlist": "Add to wishlist",
+    "savedToWishlist": "Saved to wishlist",
+    "reviews": "reviews"
+  },
+  "auth": {
+    "modalTitleIntro": "One quick step",
+    "modalSubtitle": "We just need to verify your number to continue — your selection is saved.",
+    "phoneLabel": "Mobile number",
+    "phonePlaceholder": "98765 43210",
+    "sendOtp": "Send OTP",
+    "otpLabel": "Enter the 6-digit code",
+    "otpSentTo": "Code sent to +91 {phone}",
+    "verifyOtp": "Verify & continue",
+    "changeNumber": "Change number",
+    "resendOtp": "Resend code",
+    "resendIn": "Resend in {seconds}s",
+    "successTitle": "You're verified",
+    "successSubtitle": "Continuing with your request...",
+    "errorInvalidPhone": "Enter a valid 10-digit mobile number",
+    "errorInvalidOtp": "That code didn't match. Try again.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "continueAsGuest": "Not now, keep browsing"
+  },
+  "wishlistPage": {
+    "title": "Your wishlist",
+    "empty": "Nothing saved yet — browse cars or bikes and tap the heart to save them here.",
+    "anonymousNote": "Saved on this device. Verify your number any time to keep this list safe across devices."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "hi": "हिंदी"
+  },
+  "search": {
+    "title": "Search vehicles",
+    "resultsFound": "vehicles found",
+    "filters": "Filters",
+    "vehicleType": "Vehicle type",
+    "condition": "Condition",
+    "bodyType": "Body type",
+    "all": "All",
+    "sortPriceLow": "Price: Low to High",
+    "sortPriceHigh": "Price: High to Low",
+    "sortRating": "Highest rated",
+    "noResults": "No vehicles match your filters. Try adjusting your search."
+  },
+  "compare": {
+    "title": "Compare vehicles",
+    "subtitle": "Add up to 4 cars or bikes and compare specs side by side",
+    "addVehicle": "Add vehicle",
+    "selectVehicles": "Select vehicles to compare",
+    "spec": "Specification",
+    "price": "On-road price",
+    "fuel": "Fuel type",
+    "mileage": "Mileage",
+    "rating": "User rating",
+    "bodyType": "Body type"
+  },
+  "newsPage": {
+    "title": "News & Reviews",
+    "subtitle": "Expert buying guides, launch coverage, and maintenance tips",
+    "notFound": "Article not found",
+    "backToNews": "Back to news"
+  },
+  "emiPage": {
+    "title": "EMI Calculator",
+    "subtitle": "Plan your vehicle purchase with our easy EMI calculator",
+    "totalPayment": "Total payment",
+    "totalInterest": "Total interest",
+    "disclaimer": "Indicative rates only. Actual EMI depends on lender, credit score, and vehicle model. Contact dealers for exact quotes."
+  },
+  "footer": {
+    "tagline": "India's smartest vehicle marketplace. Browse freely, decide confidently, buy transparently.",
+    "explore": "Explore",
+    "tools": "Tools",
+    "company": "Company",
+    "usedVehicles": "Used vehicles",
+    "electric": "Electric vehicles",
+    "upcoming": "Upcoming launches",
+    "about": "About us",
+    "careers": "Careers",
+    "contact": "Contact",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "rights": "All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "India's smartest vehicle marketplace",
+      "searchPlaceholder": "Search by model — e.g. Swift, Creta, Activa",
+      "searchPlaceholderCars": "Search by model — e.g. Swift, Creta, Nexon",
+      "searchPlaceholderBikes": "Search by model — e.g. Activa, Splendor, Pulsar",
+      "citySelectLabel": "Viewing prices for",
+      "searchCta": "Search",
+      "stat1": "500+ vehicles listed",
+      "stat2": "No login to browse",
+      "stat3": "Verified dealer network",
+      "panelTitle": "Find your right ride",
+      "quickPicks": "Quick picks",
+      "featured": "Featured",
+      "startingAt": "Starting at",
+      "trending": "Trending now",
+      "viewAll": "View all"
+    },
+    "budget": {
+      "title": "Browse by budget",
+      "subtitle": "Find vehicles that fit your wallet — no complex filters needed"
+    },
+    "brands": {
+      "title": "Popular brands",
+      "subtitle": "Explore cars and bikes from India's top manufacturers",
+      "viewAll": "View all brands"
+    },
+    "bodyType": {
+      "title": "Browse by body type",
+      "subtitle": "SUV, hatchback, sedan, scooter, and more"
+    },
+    "popular": {
+      "title": "Popular this week",
+      "subtitle": "Trending vehicles based on searches and views"
+    },
+    "electric": {
+      "badge": "Electric",
+      "title": "Go electric",
+      "subtitle": "Zero emissions, lower running costs, government subsidies",
+      "viewAll": "View all EVs"
+    },
+    "upcoming": {
+      "title": "Upcoming launches",
+      "subtitle": "Be the first to know about new cars and bikes hitting the market",
+      "viewAll": "View all",
+      "soon": "Coming soon",
+      "notify": "Notify me"
+    },
+    "offers": {
+      "title": "Deals & offers",
+      "subtitle": "Exclusive discounts and exchange bonuses from authorized dealers",
+      "claim": "Claim"
+    },
+    "dealers": {
+      "title": "Find dealers near you",
+      "subtitle": "Authorized showrooms with verified ratings and transparent pricing",
+      "call": "Call dealer"
+    },
+    "compareTeaser": {
+      "title": "Can't decide? Compare side by side",
+      "subtitle": "Line up to 4 vehicles and compare price, mileage, features, and ratings — sponsored listings are always labeled.",
+      "cta": "Start comparing"
+    },
+    "trust": {
+      "title": "Why CarBikeKharido?",
+      "items": {
+        "anonymous": { "title": "Browse without an account", "desc": "Full pricing, comparisons, and listings — no login wall, ever." },
+        "history": { "title": "Verified history reports", "desc": "RTO records, insurance claims, and service history in one document." },
+        "priceLock": { "title": "Price-lock guarantee", "desc": "Once quoted, your on-road price holds for a set number of days." },
+        "consent": { "title": "You control who calls you", "desc": "See exactly which dealers have your number — and switch it off anytime." }
+      }
+    },
+    "emi": {
+      "title": "EMI Calculator",
+      "subtitle": "Drag the sliders to check affordability — no sign-in needed",
+      "priceLabel": "On-road price",
+      "downPaymentLabel": "Down payment",
+      "tenureLabel": "Loan tenure",
+      "years": "yrs",
+      "rateLabel": "Interest rate (indicative)",
+      "resultLabel": "Estimated EMI",
+      "perMonth": "/month",
+      "fullCalculator": "Full calculator"
+    },
+    "news": {
+      "title": "News & reviews",
+      "subtitle": "Expert guides to help you buy smarter",
+      "cta": "Read more",
+      "viewAll": "View all",
+      "minRead": "min read"
+    },
+    "mostSearched": {
+      "title": "Most searched",
+      "viewOffers": "View offers",
+      "empty": "No listings in this category yet"
+    }
+  }
+}

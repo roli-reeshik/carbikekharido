@@ -1,0 +1,6 @@
+{
+  "name": "AERO: 4K Cinematic Electric Sports Car Reel",
+  "description": "Hyper-realistic 60fps cinematic tracking shot of a charcoal-grey electric sports car on a golden hour coastal cliffside road with slow-motion physics, anamorphic flares, and color grading suite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

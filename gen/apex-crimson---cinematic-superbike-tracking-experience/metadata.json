@@ -1,0 +1,6 @@
+{
+  "name": "Apex Crimson - Cinematic Superbike Tracking Experience",
+  "description": "An ultra-smooth 60fps cinematic tracking simulation of a matte black and crimson superbike accelerating down a wet neon-lit city highway at dusk with dynamic reflections, sound synthesis, telemetry, and director controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

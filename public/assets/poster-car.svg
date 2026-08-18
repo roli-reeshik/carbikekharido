@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <radialGradient id="carGlow" cx="40%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#f5a623" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#141414" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#070707" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="roadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0b0b"/>
+      <stop offset="50%" stop-color="#181818"/>
+      <stop offset="100%" stop-color="#080808"/>
+    </linearGradient>
+    <filter id="blurFilter">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#roadGrad)"/>
+  <rect width="1920" height="1080" fill="url(#carGlow)"/>
+  <!-- Mountain Silhouette -->
+  <path d="M0,720 L320,480 L600,620 L900,380 L1300,680 L1600,420 L1920,600 L1920,1080 L0,1080 Z" fill="#0c0e12" opacity="0.85"/>
+  <path d="M0,800 L400,650 L850,780 L1200,600 L1650,750 L1920,680 L1920,1080 L0,1080 Z" fill="#08090b" opacity="0.95"/>
+  <!-- Amber Horizon & Speed Lines -->
+  <ellipse cx="760" cy="620" rx="400" ry="120" fill="#f5a623" opacity="0.18" filter="url(#blurFilter)"/>
+  <path d="M-100,900 Q800,850 1920,950" stroke="#f5a623" stroke-width="3" stroke-dasharray="100 40" opacity="0.4"/>
+  <path d="M-100,950 Q800,900 1920,1000" stroke="#ffd080" stroke-width="2" stroke-dasharray="60 30" opacity="0.3"/>
+  <!-- Car Silhouette -->
+  <path d="M500,780 Q620,700 800,690 Q1050,685 1200,740 Q1320,760 1400,790 L1420,830 Q1380,845 1300,845 Q1250,800 1150,800 Q1050,800 1000,845 L720,845 Q670,800 570,800 Q480,800 430,845 L400,820 Z" fill="#141414" stroke="#f5a623" stroke-width="2" opacity="0.8"/>
+  <circle cx="570" cy="835" r="38" fill="#080808" stroke="#f5a623" stroke-width="4"/>
+  <circle cx="1150" cy="835" r="38" fill="#080808" stroke="#f5a623" stroke-width="4"/>
+  <!-- Headlight streak -->
+  <polygon points="1400,790 1920,730 1920,920 1380,830" fill="#ffd080" opacity="0.12" filter="url(#blurFilter)"/>
+</svg>

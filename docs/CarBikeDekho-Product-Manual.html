@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CarBikeKharido — Product Manual</title>
+  <style>
+    :root {
+      --ink: #0f1419;
+      --muted: #5a6570;
+      --line: #e2e6eb;
+      --paper: #f7f8fa;
+      --surface: #ffffff;
+      --highway: #0d2137;
+      --highway-mid: #1a3a5c;
+      --marigold: #f5a623;
+      --marigold-dark: #d4890a;
+      --teal: #0e7c7b;
+      --coral: #e85d4c;
+      --shadow: 0 1px 3px rgba(15, 20, 25, 0.06), 0 12px 32px rgba(15, 20, 25, 0.06);
+      --radius: 16px;
+      --max: 820px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 0% 0%, rgba(245, 166, 35, 0.08), transparent 55%),
+        radial-gradient(800px 400px at 100% 10%, rgba(14, 124, 123, 0.07), transparent 50%),
+        var(--paper);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* —— Cover —— */
+    .cover {
+      background: linear-gradient(155deg, #081828 0%, var(--highway) 45%, var(--highway-mid) 100%);
+      color: #fff;
+      padding: 72px 28px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      background-image: repeating-linear-gradient(
+        115deg, #fff 0, #fff 1px, transparent 1px, transparent 40px
+      );
+      pointer-events: none;
+    }
+
+    .cover-inner {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--marigold), var(--coral));
+      color: var(--highway);
+      font-weight: 800;
+      font-size: 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .brand-mark .name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark .name span { color: var(--marigold); }
+
+    .cover h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      max-width: 14ch;
+    }
+
+    .cover .lede {
+      margin-top: 18px;
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 38ch;
+    }
+
+    .cover-meta {
+      margin-top: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .cover-meta strong { color: var(--marigold); font-weight: 600; }
+
+    .cover-branding {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.65);
+      line-height: 1.7;
+    }
+
+    .cover-branding strong { color: #fff; font-weight: 600; }
+
+    .cover-branding a {
+      color: var(--marigold);
+      text-decoration: none;
+    }
+
+    .cover-branding a:hover { text-decoration: underline; }
+
+    /* —— Layout —— */
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 28px 20px;
+      box-shadow: var(--shadow);
+      margin-top: -48px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .toc h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc li {
+      counter-increment: toc;
+    }
+
+    .toc a {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .toc a:hover { background: var(--paper); text-decoration: none; }
+
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--marigold-dark);
+      font-variant-numeric: tabular-nums;
+    }
+
+    section {
+      margin-top: 56px;
+      scroll-margin-top: 24px;
+    }
+
+    section > h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--highway);
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--marigold);
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--highway);
+      margin: 28px 0 10px;
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 18px 0 6px;
+    }
+
+    p { color: var(--muted); margin-bottom: 12px; }
+    p.lead { color: var(--ink); font-size: 1.05rem; }
+
+    ul, ol { margin: 0 0 14px 1.2rem; color: var(--muted); }
+    li { margin-bottom: 6px; }
+    li strong { color: var(--ink); }
+
+    .callout {
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .callout.accent {
+      border-color: rgba(245, 166, 35, 0.45);
+      background: linear-gradient(135deg, rgba(245, 166, 35, 0.1), rgba(255, 255, 255, 0.9));
+    }
+
+    .callout.teal {
+      border-color: rgba(14, 124, 123, 0.35);
+      background: linear-gradient(135deg, rgba(14, 124, 123, 0.08), #fff);
+    }
+
+    .callout.note {
+      border-left: 4px solid var(--coral);
+    }
+
+    .callout h4 { margin-top: 0; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h4 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h4 .num {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: var(--highway);
+      color: #fff;
+      font-size: 0.75rem;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .card p { font-size: 0.92rem; margin-bottom: 0; }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .flow .step {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--highway);
+    }
+
+    .flow .arrow {
+      color: var(--marigold-dark);
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 20px;
+      font-size: 0.92rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--highway);
+      color: #fff;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; color: var(--ink); width: 28%; }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(14, 124, 123, 0.12);
+      color: var(--teal);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .pill.warn {
+      background: rgba(245, 166, 35, 0.18);
+      color: #9a6700;
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
+      background: var(--surface);
+      font-size: 0.88rem;
+    }
+
+    .compare-row > div { padding: 12px 14px; border-right: 1px solid var(--line); }
+    .compare-row > div:last-child { border-right: none; }
+    .compare-row.head { background: var(--highway); color: #fff; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .compare-row.head > div { border-color: rgba(255,255,255,0.12); }
+    .compare-row .yes { color: var(--teal); font-weight: 700; }
+    .compare-row .no { color: var(--muted); }
+    .compare-row .us { background: rgba(245, 166, 35, 0.06); }
+
+    footer.manual-foot {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer.manual-foot .brand-line {
+      margin: 14px 0;
+      padding: 14px 18px;
+      display: inline-block;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      line-height: 1.7;
+    }
+
+    footer.manual-foot .brand-line a { color: var(--teal); font-weight: 600; }
+
+    @media print {
+      body { background: #fff; font-size: 11pt; }
+      .cover { padding: 40px 24px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toc { box-shadow: none; margin-top: 24px; }
+      section { break-inside: avoid; }
+      .card, table, .callout { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="cover">
+    <div class="cover-inner">
+      <div class="brand-mark">
+        <div class="logo">CB</div>
+        <div class="name">CarBike<span>Dekho</span></div>
+      </div>
+      <h1>Product Manual</h1>
+      <p class="lede">
+        A complete guide to what the platform offers, how people use it,
+        and what sets it apart from other car and bike portals in India.
+      </p>
+      <div class="cover-meta">
+        <span><strong>Audience:</strong> Product · Sales · Support · Partners</span>
+        <span><strong>Edition:</strong> August 2026</span>
+        <span><strong>Languages:</strong> English &amp; Hindi</span>
+      </div>
+      <div class="cover-branding">
+        <p><strong>© VidyaLabs</strong> · All rights reserved</p>
+        <p>
+          Principal Developer — <strong>Rajesh Kumar</strong>
+          · Mob <a href="tel:+919140878191">9140878191</a>
+          · <a href="mailto:rkrajesh.pgi@gmail.com">rkrajesh.pgi@gmail.com</a>
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <nav class="toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#about">What CarBikeKharido is</a></li>
+        <li><a href="#who">Who it is for</a></li>
+        <li><a href="#nav">Getting around the site</a></li>
+        <li><a href="#buy-new">Workflow: Finding a new vehicle</a></li>
+        <li><a href="#buy-used">Workflow: Buying a used vehicle</a></li>
+        <li><a href="#sell">Workflow: Selling your vehicle</a></li>
+        <li><a href="#compare">Workflow: Comparing options</a></li>
+        <li><a href="#tools">Smart tools &amp; calculators</a></li>
+        <li><a href="#model">Model detail experience</a></li>
+        <li><a href="#content">News, language &amp; everyday helpers</a></li>
+        <li><a href="#unique">What makes us different</a></li>
+        <li><a href="#honest">What is still growing</a></li>
+        <li><a href="#faq">Quick answers</a></li>
+      </ol>
+    </nav>
+
+    <!-- 1 -->
+    <section id="about">
+      <h2>1. What CarBikeKharido is</h2>
+      <p class="lead">
+        CarBikeKharido is an India-focused marketplace for <strong>cars and two-wheelers in one place</strong>.
+        Visitors can browse new models, explore used listings, sell a vehicle, compare options,
+        and use decision tools — without being forced to create an account first.
+      </p>
+      <div class="callout accent">
+        <h4>The simple promise</h4>
+        <p>
+          Browse freely. Decide with better numbers. Buy or sell with clear next steps —
+          and only sign in when you need to contact someone or publish a listing.
+        </p>
+      </div>
+      <p>
+        The home screen opens with a full-width brand experience: search for cars or bikes,
+        switch between new and used, jump into popular models, and reach the tools that
+        competitors rarely put above the fold — <strong>Rider Fit</strong>, <strong>Running Cost</strong>, and <strong>EMI</strong>.
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section id="who">
+      <h2>2. Who it is for</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>New-vehicle shoppers</h4>
+          <p>People researching cars or bikes, comparing variants and prices, estimating EMI, and shortlisting models before visiting a showroom.</p>
+        </div>
+        <div class="card">
+          <h4>Used-vehicle buyers</h4>
+          <p>People filtering listings by city, price, year and mileage, then contacting private sellers or dealers after a quick phone check.</p>
+        </div>
+        <div class="card">
+          <h4>Sellers</h4>
+          <p>Owners who want a guided listing flow — details, photos, phone verification — and a published ad or a saved draft.</p>
+        </div>
+        <div class="card">
+          <h4>Two-wheeler riders</h4>
+          <p>Riders who need more than a brochure: which bike fits their height and weight, and what it really costs to own per kilometre.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="nav">
+      <h2>3. Getting around the site</h2>
+      <p>The top bar stays with you on every page:</p>
+      <table>
+        <thead>
+          <tr><th>Item</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cars / Bikes</td><td>Jump into search focused on that vehicle type.</td></tr>
+          <tr><td>Rider Fit</td><td>Opens the body-fit bike recommender.</td></tr>
+          <tr><td>Running Cost</td><td>Opens the ownership cost calculator.</td></tr>
+          <tr><td>Compare</td><td>Side-by-side comparison of vehicles.</td></tr>
+          <tr><td>News</td><td>Guides and article list.</td></tr>
+          <tr><td>EMI Calculator</td><td>Monthly instalment estimator.</td></tr>
+          <tr><td>City</td><td>Shows your preferred city context (more city-specific pricing is expanding).</td></tr>
+          <tr><td>English / हिंदी</td><td>Switches the interface language.</td></tr>
+          <tr><td>Heart (Wishlist)</td><td>Saved favourites on this device or in your account.</td></tr>
+          <tr><td>Sell</td><td>Starts the “list your vehicle” journey.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        On a model page (for example Maruti Swift or Hyundai Creta), a second sticky bar appears —
+        the same style of section tabs people know from big portals:
+        <strong>Model · Price · Compare · Offers · Images · Specs · User Reviews · 360° · Variants · More</strong>.
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section id="buy-new">
+      <h2>4. Workflow: Finding a new vehicle</h2>
+      <div class="flow">
+        <span class="step">Home / Search</span>
+        <span class="arrow">→</span>
+        <span class="step">Filters &amp; brands</span>
+        <span class="arrow">→</span>
+        <span class="step">Model page</span>
+        <span class="arrow">→</span>
+        <span class="step">Price · Variants · Tools</span>
+        <span class="arrow">→</span>
+        <span class="step">Shortlist / EMI</span>
+      </div>
+
+      <h3>Step by step</h3>
+      <ol>
+        <li>
+          <strong>Start on the home screen.</strong>
+          Choose New, then Cars or Bikes. Type a model name or use quick picks
+          (for cars: Electric, Maruti, Tata, Hyundai; for bikes: Scooters, Royal Enfield, Honda, TVS).
+        </li>
+        <li>
+          <strong>Browse the catalogue.</strong>
+          Search shows India-wide models. Narrow by category (cars, EVs, bikes, scooters), brand, and name.
+          Sort by name or price.
+        </li>
+        <li>
+          <strong>Open a model page.</strong>
+          You see the overview photo, on-road price range, mileage highlights, and how many variants exist.
+        </li>
+        <li>
+          <strong>Use the section tabs</strong> to jump to Price, Variants, Specs, Compare with rivals, Offers, and More tools —
+          without losing your place.
+        </li>
+        <li>
+          <strong>Decide with tools.</strong>
+          From the model page you can open EMI, Running Cost (for bikes), or the full Compare tool.
+          Heart a model to keep it in your wishlist.
+        </li>
+      </ol>
+
+      <div class="callout teal">
+        <h4>What “done” looks like for this journey</h4>
+        <p>
+          The visitor leaves with a shortlist, a clear price band, an EMI estimate,
+          and (for bikes) a sense of fit and running cost — ready for a showroom visit.
+          Online booking and payment for a brand-new vehicle are not part of the product yet.
+        </p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="buy-used">
+      <h2>5. Workflow: Buying a used vehicle</h2>
+      <div class="flow">
+        <span class="step">Used marketplace</span>
+        <span class="arrow">→</span>
+        <span class="step">Filters</span>
+        <span class="arrow">→</span>
+        <span class="step">Listing detail</span>
+        <span class="arrow">→</span>
+        <span class="step">Sign in</span>
+        <span class="arrow">→</span>
+        <span class="step">Contact seller</span>
+      </div>
+
+      <h3>Step by step</h3>
+      <ol>
+        <li>
+          <strong>Open Used from the home search toggles</strong> or go to the used marketplace area.
+          Featured listings and quick filters help you start fast.
+        </li>
+        <li>
+          <strong>Refine the search.</strong>
+          Apply filters such as vehicle type, price, city, fuel, year, and mileage until the list feels right.
+        </li>
+        <li>
+          <strong>Open a listing.</strong>
+          View the photo gallery, key specs, seller comments, and similar vehicles nearby.
+        </li>
+        <li>
+          <strong>Contact the seller.</strong>
+          Call, WhatsApp, or email become available after a short phone verification —
+          so casual browsing stays open, but spam stays down.
+        </li>
+        <li>
+          <strong>Save favourites.</strong>
+          Heart listings and return later; signed-in visitors can use price alerts on the marketplace wishlist.
+        </li>
+      </ol>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Also available</h4>
+          <p>Share a listing link. Report a suspicious ad. Compare several used listings side by side with a visual chart and an option to print or save as PDF.</p>
+        </div>
+        <div class="card">
+          <h4>Aggregated listings</h4>
+          <p>When multi-source inventory is connected, a unified browse view can show used vehicles collected from more than one place — still with filters and cards.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="sell">
+      <h2>6. Workflow: Selling your vehicle</h2>
+      <div class="flow">
+        <span class="step">Details</span>
+        <span class="arrow">→</span>
+        <span class="step">Photos</span>
+        <span class="arrow">→</span>
+        <span class="step">Seller &amp; verify</span>
+        <span class="arrow">→</span>
+        <span class="step">Review</span>
+        <span class="arrow">→</span>
+        <span class="step">Publish or draft</span>
+      </div>
+
+      <ol>
+        <li><strong>Step 1 — Details:</strong> Vehicle type, brand, model, year, fuel, mileage, price, city, and description.</li>
+        <li><strong>Step 2 — Media:</strong> Upload photos (and video where allowed). Progress saves as you go so a half-finished ad is not lost.</li>
+        <li><strong>Step 3 — You:</strong> Seller name and phone. Confirm the number with a one-time code before publishing.</li>
+        <li><strong>Step 4 — Review:</strong> Check everything, then publish live or keep a draft.</li>
+        <li><strong>Success:</strong> Confirmation screen with handy share links for WhatsApp and social posts.</li>
+      </ol>
+
+      <div class="callout note">
+        <h4>Support tip</h4>
+        <p>
+          If a seller says they never received a verification code, phone messaging may not be connected in that environment yet.
+          The listing form itself is complete; delivery of SMS depends on the messaging service being switched on.
+        </p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="compare">
+      <h2>7. Workflow: Comparing options</h2>
+      <p>There are two comparison experiences, on purpose:</p>
+      <table>
+        <thead>
+          <tr><th>Compare type</th><th>Best for</th><th>What you get</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>New vehicles</td>
+            <td>Shortlisting showroom models</td>
+            <td>Side-by-side price, fuel, mileage, body type, and ratings for up to four models.</td>
+          </tr>
+          <tr>
+            <td>Used listings</td>
+            <td>Choosing between real ads</td>
+            <td>Feature table, visual “radar” of strengths, shareable link, and print/PDF-friendly layout.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        On a new-model page, a <strong>Compare</strong> section also shows close rivals with price and mileage
+        so shoppers see the competitive set without leaving the page.
+      </p>
+    </section>
+
+    <!-- 8 -->
+    <section id="tools">
+      <h2>8. Smart tools &amp; calculators</h2>
+      <p class="lead">These tools are the heart of CarBikeKharido’s product personality.</p>
+
+      <h3>EMI Calculator</h3>
+      <p>
+        Drag sliders for vehicle price, down payment, tenure, and interest rate.
+        Instantly see monthly EMI, total interest, and total amount payable.
+        Also available as a teaser on the home page. Useful before talking to a bank or dealer finance desk —
+        it is an estimate, not a sanctioned loan quote.
+      </p>
+
+      <h3>Rider Fit <span class="pill">Bike-first</span></h3>
+      <p>
+        Enter height, weight, and how you like to ride (commute, tour, sport, and so on).
+        The tool ranks bikes by how well they match your body and intent — seat reach, manageability,
+        and style fit — not only by popularity.
+      </p>
+      <div class="callout accent">
+        <h4>Why this matters</h4>
+        <p>
+          Most portals answer “what’s popular?” Rider Fit answers “what will feel right under me?”
+          That is a conversation dealers rarely start with data.
+        </p>
+      </div>
+
+      <h3>Running Cost (ownership cost) <span class="pill">Bike-first</span></h3>
+      <p>
+        Pick one or more bikes and set how far you ride each year and how long you plan to keep the vehicle.
+        The calculator breaks down fuel or electricity, service, consumables, insurance, and expected resale —
+        then shows total cost of ownership and cost per kilometre.
+      </p>
+      <p>
+        Ideal for the classic debate: “Is the cheaper scooter actually cheaper after three years?”
+      </p>
+    </section>
+
+    <!-- 9 -->
+    <section id="model">
+      <h2>9. Model detail experience</h2>
+      <p>
+        Every catalogue model page is organised like a full product brochure, with sticky tabs
+        similar to leading Indian auto portals:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Section</th><th>Visitor experience</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Overview</td><td>Hero image, badges, price band, quick actions.</td></tr>
+          <tr><td>Price</td><td>On-road range, starting ex-showroom, sample EMI, variant price table.</td></tr>
+          <tr><td>Compare</td><td>Rivals table with photos, fuel, mileage, variant counts.</td></tr>
+          <tr><td>Offers</td><td>Brand deals when a campaign is listed; otherwise a clear empty state.</td></tr>
+          <tr><td>Images</td><td>Official photo today; slots reserved for more angles and colours.</td></tr>
+          <tr><td>Specs</td><td>Key figures rolled up from available variants.</td></tr>
+          <tr><td>User Reviews</td><td>Reserved section — owner reviews are being built.</td></tr>
+          <tr><td>360° View</td><td>Reserved section — interactive spins need licensed media.</td></tr>
+          <tr><td>Variants</td><td>Full trim list with fuel filter, mileage, and on-road price.</td></tr>
+          <tr><td>More</td><td>Shortcuts to EMI, Running Cost, Compare, and other models from the same brand.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        This layout is available across the catalogue — including Maruti, Hyundai, Mahindra, Kia, Toyota,
+        and every other brand in the index — so the experience stays consistent.
+      </p>
+    </section>
+
+    <!-- 10 -->
+    <section id="content">
+      <h2>10. News, language &amp; everyday helpers</h2>
+
+      <h3>Language</h3>
+      <p>
+        The product is bilingual. Switching between <strong>English</strong> and <strong>हिंदी</strong>
+        updates navigation, buttons, and core labels so Hindi-first users are not stuck in English-only UI.
+      </p>
+
+      <h3>News &amp; guides</h3>
+      <p>
+        The News area hosts buying guides and article pages. Treat current articles as
+        <strong>illustrative content</strong> while the editorial programme scales —
+        structure and reading experience are in place; the library will grow.
+      </p>
+
+      <h3>Wishlist</h3>
+      <p>
+        Heart icons let shoppers save models or used listings. Catalogue favourites stay on the device;
+        marketplace wishlist and price alerts are for signed-in visitors.
+      </p>
+
+      <h3>Dealer strip (home)</h3>
+      <p>
+        The home page shows example authorised dealers for inspiration.
+        Live city-wide dealer maps and one-tap calling are on the roadmap;
+        today this block should be described as a preview, not a complete locator product.
+      </p>
+    </section>
+
+    <!-- 11 -->
+    <section id="unique">
+      <h2>11. What makes us different</h2>
+      <p class="lead">
+        CarDekho, CarWale, and BikeDekho are excellent at scale and content.
+        CarBikeKharido competes by being <strong>two-wheeler-smart</strong>, <strong>decision-tool-first</strong>,
+        and <strong>anonymous until it matters</strong>.
+      </p>
+
+      <div class="compare-row head">
+        <div>Capability</div>
+        <div>Typical big portals</div>
+        <div class="us">CarBikeKharido</div>
+      </div>
+      <div class="compare-row">
+        <div>Cars and bikes together</div>
+        <div class="no">Often split brands or weaker bike tools</div>
+        <div class="us yes">One brand, shared browse &amp; used market</div>
+      </div>
+      <div class="compare-row">
+        <div>Body-fit bike matching</div>
+        <div class="no">Rare or absent</div>
+        <div class="us yes">Rider Fit engine</div>
+      </div>
+      <div class="compare-row">
+        <div>True cost of ownership</div>
+        <div class="no">Mileage blurbs; little TCO</div>
+        <div class="us yes">Running Cost with cost / km</div>
+      </div>
+      <div class="compare-row">
+        <div>Browse without login</div>
+        <div class="no">Often push leads early</div>
+        <div class="us yes">Anonymous-first; gate only at contact / sell</div>
+      </div>
+      <div class="compare-row">
+        <div>Used listing compare</div>
+        <div class="no">Basic tables</div>
+        <div class="us yes">Radar chart + share / print</div>
+      </div>
+      <div class="compare-row">
+        <div>Model page depth</div>
+        <div class="yes">Very deep editorial &amp; 360</div>
+        <div class="us">Same tab layout; media &amp; reviews still filling in</div>
+      </div>
+      <div class="compare-row">
+        <div>Magazine / expert corpus</div>
+        <div class="yes">Large newsrooms</div>
+        <div class="us">Growing; not the primary bet yet</div>
+      </div>
+
+      <h3>Five uniqueness pillars</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4><span class="num">1</span> Rider Fit</h4>
+          <p>Recommend bikes that match the rider’s body and intent — a two-wheeler problem car sites never solve.</p>
+        </div>
+        <div class="card">
+          <h4><span class="num">2</span> Running Cost</h4>
+          <p>Ownership maths shoppers can argue with: change kilometres and years, see who wins on cost per km.</p>
+        </div>
+        <div class="card">
+          <h4><span class="num">3</span> One roof for cars &amp; bikes</h4>
+          <p>Families shopping a hatchback and a scooter stop bouncing between two different websites.</p>
+        </div>
+        <div class="card">
+          <h4><span class="num">4</span> Respectful identity</h4>
+          <p>No login wall on browse, EMI, or fit tools. Phone check appears only when trust is required.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h4><span class="num">5</span> Marketplace that feels finished</h4>
+        <p>
+          Used buy and sell are not afterthoughts: rich filters, gallery detail, draft auto-save,
+          and used-vehicle compare with visual aids — while new-model research stays a first-class experience.
+        </p>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section id="honest">
+      <h2>12. What is still growing</h2>
+      <p>
+        A good manual tells the truth. These areas have screens or promises that are not yet
+        complete end-to-end for every visitor:
+      </p>
+      <ul>
+        <li><strong>Phone OTP by SMS</strong> — the verification screens exist; SMS delivery depends on the messaging partner being live.</li>
+        <li><strong>City-wise on-road prices</strong> — price bands are shown; changing city does not yet recalculate every figure.</li>
+        <li><strong>Dealer locator</strong> — sample dealers only; call / directions / test-drive booking are not live.</li>
+        <li><strong>Offers &amp; sponsored CTAs</strong> — may display campaigns; “Claim” does not always open a real lead form yet.</li>
+        <li><strong>User reviews &amp; 360° views</strong> — tabs are present on purpose; content is marked coming soon.</li>
+        <li><strong>News library</strong> — layout ready; many articles are still placeholder-quality.</li>
+        <li><strong>Trust promises</strong> (history report, price-lock) — homepage messaging ahead of productised tools.</li>
+        <li><strong>Company pages</strong> (About, Careers, Contact, Privacy, Terms) — linked in the footer but not filled yet.</li>
+        <li><strong>Online purchase of a new vehicle</strong> — research and contact paths exist; checkout does not.</li>
+      </ul>
+      <div class="callout">
+        <h4>How to talk about the product today</h4>
+        <p>
+          “Browse India’s cars and bikes, use Rider Fit and Running Cost to decide smarter,
+          and buy or sell used with a clear marketplace flow.”
+          Avoid promising live SMS, live dealer CRM, or full editorial depth until those journeys are finished.
+        </p>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section id="faq">
+      <h2>13. Quick answers</h2>
+
+      <h4>Do I need an account to look around?</h4>
+      <p>No. Browse, search, EMI, Rider Fit, Running Cost, and new-model pages work without signing in.</p>
+
+      <h4>When do I need to verify my phone?</h4>
+      <p>When contacting a used-vehicle seller, publishing a listing, or using marketplace alerts that need identity.</p>
+
+      <h4>Is CarBikeKharido only for bikes?</h4>
+      <p>No. Cars and bikes share the brand. Some unique tools (Rider Fit, Running Cost) are two-wheeler-specific by design.</p>
+
+      <h4>Can I buy a car online end-to-end?</h4>
+      <p>Not yet. The product helps you research and connect; showroom purchase and finance still happen offline or through partners to come.</p>
+
+      <h4>What should support say when someone asks “Why is my OTP not arriving?”</h4>
+      <p>
+        Acknowledge the step, explain that SMS may not be enabled in this environment yet,
+        and escalate to the team that manages messaging — do not invent a code for the customer.
+      </p>
+
+      <h4>Where should partners start?</h4>
+      <p>
+        New OEMs/dealers: model pages + offers + EMI. Used dealers: marketplace listings + compare.
+        Two-wheeler brands: Rider Fit and Running Cost as the conversation openers.
+      </p>
+    </section>
+
+    <footer class="manual-foot">
+      <p><strong>CarBikeKharido</strong> — Product Manual · August 2026</p>
+      <p class="brand-line">
+        <strong>Copyright © VidyaLabs</strong>
+        · Principal Developer — <strong>Rajesh Kumar</strong><br />
+        Mob <a href="tel:+919140878191">9140878191</a>
+        · E-mail <a href="mailto:rkrajesh.pgi@gmail.com">rkrajesh.pgi@gmail.com</a>
+      </p>
+      <p>For internal and partner use. Open this file in any browser · Print or Save as PDF from the browser menu.</p>
+    </footer>
+  </div>
+
+</body>
+</html>

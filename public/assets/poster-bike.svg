@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bikeGlow" cx="60%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#00f5d4" stop-opacity="0.32"/>
+      <stop offset="50%" stop-color="#0d1f22" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#070707" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="trackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07090a"/>
+      <stop offset="50%" stop-color="#101819"/>
+      <stop offset="100%" stop-color="#050708"/>
+    </linearGradient>
+    <filter id="blurFilterBike">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#trackGrad)"/>
+  <rect width="1920" height="1080" fill="url(#bikeGlow)"/>
+  <!-- Track Kerbs & Apex -->
+  <path d="M0,900 C600,750 1200,980 1920,820 L1920,1080 L0,1080 Z" fill="#0c1214" opacity="0.9"/>
+  <!-- Neon Cyan Apex Curbs -->
+  <path d="M400,820 C800,740 1300,900 1800,790" stroke="#00f5d4" stroke-width="6" stroke-dasharray="80 40" opacity="0.55"/>
+  <path d="M400,835 C800,755 1300,915 1800,805" stroke="#ffffff" stroke-width="4" stroke-dasharray="40 80" opacity="0.3"/>
+  <!-- Glowing Apex Aura -->
+  <ellipse cx="1180" cy="720" rx="420" ry="140" fill="#00f5d4" opacity="0.22" filter="url(#blurFilterBike)"/>
+  <!-- Superbike Leaning Silhouette -->
+  <path d="M960,780 Q1040,680 1150,670 Q1220,660 1280,720 Q1310,750 1320,800 Q1260,820 1180,820 Q1060,820 960,780 Z" fill="#141c1f" stroke="#00f5d4" stroke-width="2" opacity="0.85"/>
+  <circle cx="1030" cy="780" r="32" fill="#080808" stroke="#00f5d4" stroke-width="4"/>
+  <circle cx="1270" cy="770" r="32" fill="#080808" stroke="#00f5d4" stroke-width="4"/>
+  <!-- LED Taillight streak -->
+  <polygon points="980,740 0,650 0,820 960,770" fill="#00f5d4" opacity="0.15" filter="url(#blurFilterBike)"/>
+</svg>

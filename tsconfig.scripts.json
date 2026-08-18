@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@services/*": ["./services/*"]
+    }
+  },
+  "include": ["scripts/**/*.ts", "services/**/*.ts", "src/lib/queue.ts"]
+}

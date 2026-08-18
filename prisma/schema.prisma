@@ -1,0 +1,635 @@
+// Reference Prisma schema mirroring db/migrations/002_content_community_editorial.sql
+// The running app uses mysql2 + raw SQL (src/lib/db/*). This file is for
+// teams that prefer Prisma Client — run `npx prisma db pull` after migration.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  id        BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  name      String     @db.VarChar(120)
+  bio       String?    @db.Text
+  avatarUrl String?    @map("avatar_url") @db.VarChar(500)
+  role      AuthorRole @default(contributor)
+  createdAt DateTime   @default(now()) @map("created_at")
+  articles  Article[]
+
+  @@map("authors")
+}
+
+enum AuthorRole {
+  journalist
+  editor
+  contributor
+}
+
+model Article {
+  id                 BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  title              String             @db.VarChar(300)
+  slug               String             @unique @db.VarChar(320)
+  excerpt            String?            @db.Text
+  contentHtml        String             @map("content_html") @db.LongText
+  thumbnailUrl       String?            @map("thumbnail_url") @db.VarChar(500)
+  readTimeMinutes    Int                @default(5) @map("read_time_minutes") @db.UnsignedSmallInt
+  seoMetaTitle       String?            @map("seo_meta_title") @db.VarChar(300)
+  seoMetaDescription String?            @map("seo_meta_description") @db.VarChar(500)
+  seoJsonLd          Json?              @map("seo_json_ld")
+  authorId           BigInt             @map("author_id") @db.UnsignedBigInt
+  status             ArticleStatus      @default(draft)
+  publishedAt        DateTime?          @map("published_at")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  author             Author             @relation(fields: [authorId], references: [id])
+  entityTags         ArticleEntityTag[]
+
+  @@index([status, publishedAt])
+  @@map("articles")
+}
+
+enum ArticleStatus {
+  draft
+  published
+  archived
+}
+
+model ArticleEntityTag {
+  id            BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  articleId     BigInt     @map("article_id") @db.UnsignedBigInt
+  entityType    EntityType @map("entity_type")
+  brandId       BigInt?    @map("brand_id") @db.UnsignedBigInt
+  vehicleId     BigInt?    @map("vehicle_id") @db.UnsignedBigInt
+  modelName     String?    @map("model_name") @db.VarChar(150)
+  categoryLabel String?    @map("category_label") @db.VarChar(80)
+  article       Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, brandId, vehicleId, modelName])
+  @@map("article_entity_tags")
+}
+
+enum EntityType {
+  brand
+  model
+  vehicle
+  category
+}
+
+model VehicleReview {
+  id              BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  vehicleId       BigInt       @map("vehicle_id") @db.UnsignedBigInt
+  userId          BigInt       @map("user_id") @db.UnsignedBigInt
+  rating          Int          @db.UnsignedTinyInt
+  title           String       @db.VarChar(200)
+  body            String       @db.Text
+  isVerifiedOwner Boolean      @default(false) @map("is_verified_owner")
+  verificationRef String?      @map("verification_ref") @db.VarChar(120)
+  verifiedAt      DateTime?    @map("verified_at")
+  helpfulCount    Int          @default(0) @map("helpful_count") @db.UnsignedInt
+  status          ReviewStatus @default(pending)
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  @@index([vehicleId, status, isVerifiedOwner])
+  @@map("vehicle_reviews")
+}
+
+enum ReviewStatus {
+  pending
+  published
+  rejected
+}
+
+model VehicleQuestion {
+  id           BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  vehicleId    BigInt          @map("vehicle_id") @db.UnsignedBigInt
+  userId       BigInt          @map("user_id") @db.UnsignedBigInt
+  questionText String          @map("question_text") @db.Text
+  status       QuestionStatus  @default(open)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  answers      VehicleAnswer[]
+
+  @@index([vehicleId, status])
+  @@map("vehicle_questions")
+}
+
+enum QuestionStatus {
+  open
+  answered
+  closed
+}
+
+model VehicleAnswer {
+  id               BigInt          @id @default(autoincrement()) @db.UnsignedBigInt
+  questionId       BigInt          @map("question_id") @db.UnsignedBigInt
+  userId           BigInt?         @map("user_id") @db.UnsignedBigInt
+  expertId         BigInt?         @map("expert_id") @db.UnsignedBigInt
+  answerText       String          @map("answer_text") @db.Text
+  isVerifiedOwner  Boolean         @default(false) @map("is_verified_owner")
+  isExpertResponse Boolean         @default(false) @map("is_expert_response")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  question         VehicleQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@map("vehicle_answers")
+}
+
+model Expert {
+  id                 BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  name               String   @db.VarChar(120)
+  title              String   @db.VarChar(150)
+  bio                String?  @db.Text
+  avatarUrl          String?  @map("avatar_url") @db.VarChar(500)
+  specializations    Json
+  vehicleTypes       String   @map("vehicle_types")
+  consultationFeeInr Decimal  @default(0) @map("consultation_fee_inr") @db.Decimal(10, 2)
+  rating             Decimal  @default(4.50) @db.Decimal(3, 2)
+  slaResponseHours   Int      @default(24) @map("sla_response_hours") @db.UnsignedSmallInt
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("experts")
+}
+
+// =============================================================================
+// USERS & CONTENT  (base auth + community — extended below for marketplace)
+// =============================================================================
+
+/// Platform account. Phone OTP is the primary identity path for Indian users.
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  name          String?
+  phone         String?
+  phoneVerified Boolean  @default(false) @map("phone_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Content community
+  posts    Post[]
+  comments Comment[]
+
+  // Marketplace (vehicles module)
+  seller      Seller?
+  vehicles    Vehicle[]
+  wishlists   Wishlist[]
+  inquiries   Inquiry[]
+  priceAlerts PriceAlert[]
+  reviews     Review[]
+
+  @@index([phone])
+  @@map("app_users")
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  title     String
+  content   String?   @db.Text
+  authorId  String    @map("author_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  postId    String   @map("post_id")
+  authorId  String   @map("author_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+// =============================================================================
+// VEHICLES MARKETPLACE MODULE
+// Seller listings, media, wishlists, inquiries, reviews, and price alerts.
+// Table names are prefixed to avoid clashing with the catalog `vehicles` table
+// defined in db/schema.sql (new-car / bike catalog, not C2C listings).
+// =============================================================================
+
+enum SellerType {
+  INDIVIDUAL
+  DEALER
+}
+
+enum VehicleType {
+  CAR
+  BIKE
+}
+
+enum ListingType {
+  NORMAL
+  URGENT
+  BEST_DEAL
+}
+
+enum VehicleListingStatus {
+  ACTIVE
+  INACTIVE
+  SOLD
+  EXPIRED
+}
+
+enum InquiryStatus {
+  PENDING
+  CONTACTED
+  CLOSED
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
+/// Seller profile — 1-to-1 with User. Dealers carry optional business metadata.
+model Seller {
+  id                 String     @id @default(cuid())
+  userId             String     @unique @map("user_id")
+  sellerType         SellerType @map("seller_type")
+  dealerName         String?    @map("dealer_name")
+  dealerRegNumber    String?    @map("dealer_reg_number")
+  dealerWebsite      String?    @map("dealer_website")
+  ratings            Float      @default(0)
+  totalReviews       Int        @default(0) @map("total_reviews")
+  verificationStatus Int        @default(0) @map("verification_status")
+  memberSince        DateTime   @default(now()) @map("member_since")
+  avgResponseTime    Int?       @map("avg_response_time") // minutes
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listings Vehicle[]
+  reviews  Review[]
+
+  @@map("sellers")
+}
+
+/// Main C2C / dealer listing table for cars and bikes posted by sellers.
+model Vehicle {
+  id                     String               @id @default(cuid())
+  sellerId               String               @map("seller_id")
+  userId                 String               @map("user_id")
+  vehicleType            VehicleType          @map("vehicle_type")
+  brand                  String
+  model                  String
+  yearOfManufacture      Int                  @map("year_of_manufacture")
+  color                  String?
+  condition              String
+  registrationNumber     String?              @map("registration_number")
+  fuelType               String?              @map("fuel_type")
+  transmission           String?
+  engineCC               Int?                 @map("engine_cc")
+  power                  String?
+  torque                 String?
+  currentMileage         Int?                 @map("current_mileage")
+  ownerType              String?              @map("owner_type")
+  insuranceValid         Boolean              @default(false) @map("insurance_valid")
+  insuranceValidTill     DateTime?            @map("insurance_valid_till")
+  pollutionCertValid     Boolean              @default(false) @map("pollution_cert_valid")
+  pollutionCertValidTill DateTime?            @map("pollution_cert_valid_till")
+  serviceHistoryAvail    Boolean              @default(false) @map("service_history_avail")
+  accidentHistory        Boolean              @default(false) @map("accident_history")
+  accidentDescription    String?              @map("accident_description") @db.Text
+  modifications          String?              @db.Text
+  askingPrice            BigInt               @map("asking_price")
+  priceNegotiable        Boolean              @default(true) @map("price_negotiable")
+  description            String?              @db.Text
+  listingType            ListingType          @default(NORMAL) @map("listing_type")
+  status                 VehicleListingStatus @default(ACTIVE)
+  city                   String
+  state                  String
+  address                String?              @db.Text
+  latitude               Float?
+  longitude              Float?
+  viewCount              Int                  @default(0) @map("view_count")
+  inquiryCount           Int                  @default(0) @map("inquiry_count")
+  savedCount             Int                  @default(0) @map("saved_count")
+  features               String               @default("[]") // JSON array of feature strings
+  createdAt              DateTime             @default(now()) @map("created_at")
+  updatedAt              DateTime             @updatedAt @map("updated_at")
+  publishedAt            DateTime?            @map("published_at")
+  expiresAt              DateTime?            @map("expires_at") // app sets to createdAt + 30 days
+  soldAt                 DateTime?            @map("sold_at")
+
+  seller        Seller         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images        VehicleImage[]
+  wishlistItems Wishlist[]
+  inquiries     Inquiry[]
+  reviews       Review[]
+  priceAlerts   PriceAlert[]
+
+  @@unique([registrationNumber, city])
+  @@index([sellerId])
+  @@index([city])
+  @@index([status])
+  @@index([createdAt])
+  @@map("marketplace_vehicles")
+}
+
+/// Photos and videos attached to a marketplace listing.
+model VehicleImage {
+  id         String    @id @default(cuid())
+  vehicleId  String    @map("vehicle_id")
+  url        String    @db.VarChar(500)
+  type       MediaType @default(PHOTO)
+  order      Int       @default(0)
+  isThumb    Boolean   @default(false) @map("is_thumb")
+  quality    String? // e.g. "hd", "original"
+  uploadedAt DateTime  @default(now()) @map("uploaded_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId, order])
+  @@map("marketplace_vehicle_images")
+}
+
+/// Saved listings — one row per user per vehicle.
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  vehicleId String   @map("vehicle_id")
+  savedAt   DateTime @default(now()) @map("saved_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleId])
+  @@index([userId])
+  @@map("marketplace_wishlists")
+}
+
+/// Buyer inquiry on a listing — tracks outreach and seller response.
+model Inquiry {
+  id          String        @id @default(cuid())
+  vehicleId   String        @map("vehicle_id")
+  buyerId     String        @map("buyer_id")
+  message     String        @db.Text
+  status      InquiryStatus @default(PENDING)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  respondedAt DateTime?     @map("responded_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([buyerId])
+  @@map("marketplace_inquiries")
+}
+
+/// Seller rating left by a buyer after a transaction or interaction.
+model Review {
+  id        String   @id @default(cuid())
+  vehicleId String   @map("vehicle_id")
+  sellerId  String   @map("seller_id")
+  userId    String   @map("user_id")
+  rating    Int // 1–5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  seller  Seller  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@map("marketplace_reviews")
+}
+
+/// Price-drop notification — user wants to be alerted when price falls below maxPrice.
+model PriceAlert {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  vehicleId String   @map("vehicle_id")
+  maxPrice  BigInt   @map("max_price")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@map("marketplace_price_alerts")
+}
+
+// =============================================================================
+// AGGREGATED LISTINGS (external scrape sources — OLX, Cars24, etc.)
+// =============================================================================
+
+model AggregatedListing {
+  id            String   @id @default(cuid())
+  sourceWebsite String   @map("source_website") @db.VarChar(60)
+  externalId    String   @map("external_id") @db.VarChar(120)
+  title         String   @db.VarChar(300)
+  priceInr      BigInt   @map("price_inr")
+  location      String?  @db.VarChar(200)
+  mileage       String?  @db.VarChar(80)
+  condition     String?  @db.VarChar(80)
+  sellerName    String?  @map("seller_name") @db.VarChar(120)
+  listingUrl    String   @map("listing_url") @db.VarChar(500)
+  city          String   @db.VarChar(80)
+  category      String   @db.VarChar(30)
+  viewCount     Int      @default(0) @map("view_count")
+  lastScrapedAt DateTime @default(now()) @map("last_scraped_at")
+  expiresAt     DateTime @map("expires_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  images AggregatedImage[]
+
+  @@unique([sourceWebsite, externalId])
+  @@index([city])
+  @@index([expiresAt])
+  @@map("aggregated_listings")
+}
+
+model AggregatedImage {
+  id           String   @id @default(cuid())
+  listingId    String   @map("listing_id")
+  url          String   @db.VarChar(500)
+  thumbnailUrl String?  @map("thumbnail_url") @db.VarChar(500)
+  order        Int      @default(0)
+  quality      Int?     @default(80)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  listing AggregatedListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, order])
+  @@map("aggregated_images")
+}
+
+// =============================================================================
+// BIKE SPECS (structured two-wheeler specifications scraped from BikeDekho)
+// =============================================================================
+
+/// One row per catalog model (`CatalogModel.id`, e.g. "bike-royal-enfield-classic-350").
+/// Every spec column is nullable: coverage varies across the ~992 two-wheeler
+/// models and a partial row is far more useful than a rejected one.
+model BikeSpec {
+  id        String @id @default(cuid())
+  modelId   String @unique @map("model_id") @db.VarChar(160)
+  brandSlug String @map("brand_slug") @db.VarChar(80)
+  modelSlug String @map("model_slug") @db.VarChar(120)
+  modelName String @map("model_name") @db.VarChar(200)
+  sourceUrl String @map("source_url") @db.VarChar(500)
+  source    String @default("bikedekho") @db.VarChar(40)
+
+  // --- Engine and transmission -------------------------------------------
+  displacementCc   Int?     @map("displacement_cc")
+  engineType       String?  @map("engine_type") @db.VarChar(200)
+  cylinders        Int?
+  maxPowerPs       Decimal? @map("max_power_ps") @db.Decimal(7, 2)
+  maxPowerRpm      Int?     @map("max_power_rpm")
+  maxTorqueNm      Decimal? @map("max_torque_nm") @db.Decimal(7, 2)
+  maxTorqueRpm     Int?     @map("max_torque_rpm")
+  topSpeedKmph     Int?     @map("top_speed_kmph")
+  coolingSystem    String?  @map("cooling_system") @db.VarChar(80)
+  startingSystem   String?  @map("starting_system") @db.VarChar(80)
+  transmissionType String?  @map("transmission_type") @db.VarChar(60)
+  gears            Int?
+  driveType        String?  @map("drive_type") @db.VarChar(60)
+  emissionNorm     String?  @map("emission_norm") @db.VarChar(40)
+
+  // --- Mileage ------------------------------------------------------------
+  mileageCityKmpl    Decimal? @map("mileage_city_kmpl") @db.Decimal(6, 2)
+  mileageHighwayKmpl Decimal? @map("mileage_highway_kmpl") @db.Decimal(6, 2)
+  mileageOverallKmpl Decimal? @map("mileage_overall_kmpl") @db.Decimal(6, 2)
+
+  // --- Dimensions (seat height + kerb weight drive the Rider Fit engine) ---
+  seatHeightMm      Int?     @map("seat_height_mm")
+  kerbWeightKg      Decimal? @map("kerb_weight_kg") @db.Decimal(6, 2)
+  groundClearanceMm Int?     @map("ground_clearance_mm")
+  wheelbaseMm       Int?     @map("wheelbase_mm")
+  lengthMm          Int?     @map("length_mm")
+  widthMm           Int?     @map("width_mm")
+  heightMm          Int?     @map("height_mm")
+  fuelTankL         Decimal? @map("fuel_tank_l") @db.Decimal(5, 2)
+  fuelReserveL      Decimal? @map("fuel_reserve_l") @db.Decimal(5, 2)
+
+  // --- Brakes, tyres, suspension ------------------------------------------
+  frontBrake      String? @map("front_brake") @db.VarChar(60)
+  rearBrake       String? @map("rear_brake") @db.VarChar(60)
+  absType         String? @map("abs_type") @db.VarChar(60)
+  tyreFront       String? @map("tyre_front") @db.VarChar(80)
+  tyreRear        String? @map("tyre_rear") @db.VarChar(80)
+  wheelType       String? @map("wheel_type") @db.VarChar(60)
+  frontSuspension String? @map("front_suspension") @db.VarChar(300)
+  rearSuspension  String? @map("rear_suspension") @db.VarChar(300)
+
+  // --- Ownership ----------------------------------------------------------
+  warrantyYears     Int? @map("warranty_years")
+  warrantyKm        Int? @map("warranty_km")
+  firstServiceKm    Int? @map("first_service_km")
+  serviceIntervalKm Int? @map("service_interval_km")
+
+  // --- Electric -----------------------------------------------------------
+  batteryKwh     Decimal? @map("battery_kwh") @db.Decimal(6, 2)
+  claimedRangeKm Int?     @map("claimed_range_km")
+  chargeTimeHrs  Decimal? @map("charge_time_hrs") @db.Decimal(5, 2)
+  motorKw        Decimal? @map("motor_kw") @db.Decimal(6, 2)
+
+  // --- Classification (raw from source, plus values we derive) ------------
+  bodyTypeRaw   String?  @map("body_type_raw") @db.VarChar(80)
+  bodyType      String?  @map("body_type") @db.VarChar(40)
+  ridingPosture String?  @map("riding_posture") @db.VarChar(40)
+  powerToWeight Decimal? @map("power_to_weight") @db.Decimal(7, 3)
+  isElectric    Boolean  @default(false) @map("is_electric")
+
+  /// Unreleased models legitimately have almost no published specs, so they are
+  /// excluded from low-completeness alerting rather than treated as parse failures.
+  isUpcoming Boolean @default(false) @map("is_upcoming")
+
+  // --- Pricing (rupees, Delhi) --------------------------------------------
+  /// The catalog index carries no price for any two-wheeler, so these are the
+  /// only bike prices in the system.
+  exShowroomMinInr Int? @map("ex_showroom_min_inr")
+  exShowroomMaxInr Int? @map("ex_showroom_max_inr")
+  onRoadMinInr     Int? @map("on_road_min_inr")
+  onRoadMaxInr     Int? @map("on_road_max_inr")
+
+  // --- Source ratings -----------------------------------------------------
+  ratingAvg   Decimal? @map("rating_avg") @db.Decimal(3, 2)
+  ratingCount Int?     @map("rating_count")
+
+  /// Every label/value pair we captured, as JSON. Keeps fields we do not yet
+  /// model queryable-by-hand without forcing a re-scrape.
+  rawSpecs String? @map("raw_specs") @db.Text
+
+  /// 0-100 share of the core fields that were successfully parsed. Lets the
+  /// scraper flag models whose markup drifted without failing the whole run.
+  completeness Int @default(0)
+
+  lastScrapedAt DateTime @default(now()) @map("last_scraped_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([brandSlug])
+  @@index([displacementCc])
+  @@index([seatHeightMm])
+  @@index([bodyType])
+  @@index([completeness])
+  @@index([isUpcoming])
+  @@index([exShowroomMinInr])
+  @@map("bike_specs")
+}
+
+model ScrapingJob {
+  id                String    @id @default(cuid())
+  bullJobId         String?   @unique @map("bull_job_id") @db.VarChar(120)
+  jobType           String    @map("job_type") @db.VarChar(60)
+  source            String    @default("olx") @db.VarChar(40)
+  city              String?   @db.VarChar(80)
+  category          String?   @db.VarChar(30)
+  status            String    @default("PENDING") @db.VarChar(20)
+  listingsScraped   Int       @default(0) @map("listings_scraped")
+  imagesDownloaded  Int       @default(0) @map("images_downloaded")
+  errorsEncountered Int       @default(0) @map("errors_encountered")
+  errorLog          String?   @map("error_log") @db.Text
+  startedAt         DateTime? @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("scraping_jobs")
+}
+
+model ScrapeLog {
+  id        String   @id @default(cuid())
+  level     String   @db.VarChar(20)
+  source    String   @default("olx") @db.VarChar(40)
+  message   String   @db.Text
+  meta      String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@index([source])
+  @@map("scrape_logs")
+}
+
+model MonitoringAlert {
+  id           String    @id @default(cuid())
+  type         String    @db.VarChar(60)
+  severity     String    @default("warning") @db.VarChar(20)
+  message      String    @db.VarChar(500)
+  details      String?   @db.Text
+  channels     String?   @db.VarChar(120)
+  acknowledged Boolean   @default(false)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  acknowledgedAt DateTime? @map("acknowledged_at")
+
+  @@index([acknowledged, createdAt])
+  @@index([type, createdAt])
+  @@map("monitoring_alerts")
+}

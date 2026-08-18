@@ -1,0 +1,428 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-body: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f7f8fa;
+  color: #0f1419;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #f5a623 0%, #e85d4c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-amber {
+    background: linear-gradient(135deg, #ffd080 0%, #f5a623 50%, #ff6b35 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #a7f3d0 0%, #00f5d4 50%, #00b4d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .backdrop-blur-20 {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .backdrop-blur-30 {
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+  }
+
+  .cinematic-grid {
+    display: grid;
+    contain: layout paint;
+  }
+
+  .split-panel {
+    transition: flex 700ms cubic-bezier(0.16, 1, 0.3, 1),
+                width 700ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 500ms ease,
+                transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+                filter 500ms ease;
+    will-change: flex, width, transform, filter;
+  }
+}
+
+@layer components {
+  .section-title {
+    @apply font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl;
+  }
+
+  .section-subtitle {
+    @apply mt-1 text-sm text-ink/55 sm:text-base;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink transition hover:border-highway hover:text-highway hover:shadow-sm;
+  }
+
+  .chip-active {
+    @apply border-highway bg-highway text-white shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-marigold px-5 py-2.5 text-sm font-semibold text-highway transition hover:bg-marigold-dark hover:shadow-md active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-highway bg-transparent px-5 py-2.5 text-sm font-semibold text-highway transition hover:bg-highway/5 active:scale-[0.98];
+  }
+
+  .card {
+    @apply overflow-hidden rounded-2xl border border-line/80 bg-surface shadow-card transition hover:shadow-card-hover;
+  }
+}
+
+/* --- Hero motion ---------------------------------------------------------
+   Kept in plain CSS rather than a motion library: these are one-shot entrance
+   animations with no interaction state, so there is nothing for a runtime to
+   manage. Every rule is disabled under prefers-reduced-motion below.        */
+
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes heroPing {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.hero-reveal {
+  animation: heroReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-reveal-delay {
+  animation-delay: 0.14s;
+}
+
+.hero-float {
+  animation: heroFloat 7s ease-in-out infinite;
+}
+
+.hero-ping {
+  animation: heroPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* --- Hero showcase rotator ----------------------------------------------
+   Every slide stays mounted so images are already decoded when they become
+   active; only opacity and transform change between states.                */
+
+.showcase-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  transition:
+    opacity 0.55s ease,
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.showcase-slide.is-active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  z-index: 2;
+}
+
+/* Outgoing vehicle continues to the left, so the pair reads as movement
+   rather than a dissolve. */
+.showcase-slide.is-exiting {
+  opacity: 0;
+  transform: translateX(-22%) scale(0.94);
+  z-index: 1;
+}
+
+.showcase-slide.is-waiting {
+  opacity: 0;
+  transform: translateX(22%) scale(0.94);
+  z-index: 0;
+}
+
+@keyframes showcaseSettle {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes showcaseShadow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@keyframes showcaseProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.showcase-caption {
+  animation: showcaseSettle 0.5s ease both;
+}
+
+.showcase-shadow {
+  animation: showcaseShadow 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.showcase-progress {
+  animation: showcaseProgress linear both;
+}
+
+/* --- Cinematic Showroom Detail Entrance Animations -------------------------
+   1. Vehicle Cutout: opacity 0, scale 0.85, blur 10px, translateX(-40px) -> opacity 1, scale 1, blur 0, translateX(0) (1.2s, [0.16, 1, 0.3, 1])
+   2. Ground Shadow: fades in (0 to 0.7) and scales up right as cutout finishes (delay 0.55s, 0.8s duration)
+   3. Spec Content Stagger: fades in and translates up after vehicle animation finishes (delay 0.85s, 0.6s duration)
+--------------------------------------------------------------------------- */
+
+@keyframes cinematicCutoutEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) scale(0.85);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes groundShadowEntrance {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.7);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes specContentStagger {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cinematic-cutout-enter {
+  animation: cinematicCutoutEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+
+.ground-shadow-enter {
+  animation: groundShadowEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.spec-stagger-enter {
+  animation: specContentStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.spec-stagger-enter-delay {
+  animation: specContentStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.05s forwards;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* --- Cinematic Brand Logo Entrance Animation --------------------------------
+   Duration: 1.8s, ease: cubic-bezier(0.16, 1, 0.3, 1)
+   0%: opacity: 0, letter-spacing: 0.1em, filter: blur(8px)
+   100%: opacity: 1, letter-spacing: 0.25em, filter: blur(0px)
+--------------------------------------------------------------------------- */
+
+@keyframes cinematicLogoEntrance {
+  0% {
+    opacity: 0;
+    letter-spacing: 0.08em;
+    filter: blur(6px);
+    transform: translateY(-2px);
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.25em;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+.cinematic-logo-enter {
+  animation: cinematicLogoEntrance 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, letter-spacing, filter, transform;
+}
+
+.brand-text-luxury {
+  background: linear-gradient(135deg, #ffffff 0%, #e4e4e7 50%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+}
+
+/* --- Flagship Category Showcase Entrance Animation -------------------------
+   0%: opacity: 0, transform: translateX(100px) scale(0.8), filter: blur(10px)
+   100%: opacity: 1, transform: translateX(0) scale(1), filter: blur(0px)
+   Easing: cubic-bezier(0.16, 1, 0.3, 1), Duration: 1.2s
+--------------------------------------------------------------------------- */
+
+@keyframes flagshipVehicleEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(100px) scale(0.8);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.flagship-vehicle-enter {
+  animation: flagshipVehicleEntrance 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+  will-change: opacity, transform, filter;
+}
+
+@keyframes flagshipShadowEntrance {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.5);
+  }
+  100% {
+    opacity: 0.75;
+    transform: scaleX(1);
+  }
+}
+
+.flagship-shadow-enter {
+  animation: flagshipShadowEntrance 1.0s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+@keyframes showcaseContentStagger {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.showcase-content-enter {
+  animation: showcaseContentStagger 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reveal,
+  .hero-float,
+  .hero-ping,
+  .showcase-caption,
+  .showcase-shadow,
+  .showcase-progress {
+    animation: none;
+  }
+  .hero-reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .showcase-slide {
+    transition: opacity 0.2s ease;
+    transform: none !important;
+  }
+}

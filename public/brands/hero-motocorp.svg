@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Hero MotoCorp">
+  <rect width="120" height="120" rx="8" fill="#fff"/>
+  <text x="60" y="58" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="22" font-weight="900" fill="#C8102E" letter-spacing="1">HERO</text>
+  <text x="60" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="600" fill="#333" letter-spacing="1">MOTOCORP</text>
+</svg>

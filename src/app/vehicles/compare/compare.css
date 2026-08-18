@@ -1,0 +1,33 @@
+.compare-page .compare-columns {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.compare-page .compare-column {
+  scroll-snap-align: center;
+}
+
+@media print {
+  .compare-no-print {
+    display: none !important;
+  }
+
+  .compare-page {
+    background: white !important;
+  }
+
+  .compare-print-section {
+    break-inside: avoid;
+  }
+
+  .compare-columns {
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+  }
+
+  .compare-column {
+    width: 48% !important;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}

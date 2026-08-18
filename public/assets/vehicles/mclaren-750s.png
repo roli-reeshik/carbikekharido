@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="100%" height="100%">
+  <defs>
+    <radialGradient id="underGlow_McLaren" cx="50%" cy="80%" r="50%">
+      <stop offset="0%" stop-color="#f5a623" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bodyGrad_McLaren" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="50%" stop-color="#181818"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="roofGrad_McLaren" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#383838"/>
+      <stop offset="100%" stop-color="#121212"/>
+    </linearGradient>
+    <filter id="shadowBlur_McLaren">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+    </filter>
+  </defs>
+  <!-- Floor Contact Shadow & Ambient Glow -->
+  <ellipse cx="400" cy="300" rx="340" ry="24" fill="#000000" opacity="0.85" filter="url(#shadowBlur_McLaren)"/>
+  <ellipse cx="400" cy="295" rx="280" ry="18" fill="url(#underGlow_McLaren)"/>
+  
+  <!-- Aerodynamic Low Slung Body -->
+  <path d="M120,260 Q180,240 240,240 L330,195 Q400,165 520,165 L610,195 Q680,225 730,250 Q750,265 720,275 L670,280 Q620,240 550,240 Q480,240 430,280 L320,280 Q270,240 200,240 Q130,240 90,280 L70,270 Q60,260 120,260 Z" fill="url(#bodyGrad_McLaren)" stroke="#f5a623" stroke-width="2.5"/>
+  
+  <!-- Greenhouse / Cockpit Roofline -->
+  <path d="M280,220 L350,175 Q420,150 510,150 L580,185 Q620,210 630,225 Z" fill="url(#roofGrad_McLaren)" stroke="#f5a623" stroke-width="1.5" opacity="0.95"/>
+  <!-- Tinted Glass Window -->
+  <path d="M360,180 Q430,160 505,160 L565,190 Q540,215 420,218 Z" fill="#0d1821" stroke="#ffffff" stroke-width="0.75" opacity="0.85"/>
+  
+  <!-- Headlight / Tailight LED Strips -->
+  <path d="M680,230 Q720,245 730,250" stroke="#f5a623" stroke-width="4" stroke-linecap="round"/>
+  <path d="M80,265 L110,262" stroke="#ff3b30" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Aero Wing / Spoiler -->
+  <path d="M70,235 Q100,230 130,240 L125,255 L75,250 Z" fill="#1f1f1f" stroke="#f5a623" stroke-width="1.5"/>
+
+  <!-- Front Wheel & Disc Brake -->
+  <g transform="translate(200, 275)">
+    <circle cx="0" cy="0" r="46" fill="#0c0c0c" stroke="#333333" stroke-width="6"/>
+    <circle cx="0" cy="0" r="36" fill="#141414" stroke="#f5a623" stroke-width="2"/>
+    <circle cx="0" cy="0" r="24" fill="#222222"/>
+    <path d="M-30,-5 L30,5 M-5,-30 L5,30 M-22,22 L22,-22 M-22,-22 L22,22" stroke="#f5a623" stroke-width="2.5" opacity="0.85"/>
+    <circle cx="0" cy="0" r="10" fill="#f5a623"/>
+  </g>
+
+  <!-- Rear Wheel & Disc Brake -->
+  <g transform="translate(550, 275)">
+    <circle cx="0" cy="0" r="46" fill="#0c0c0c" stroke="#333333" stroke-width="6"/>
+    <circle cx="0" cy="0" r="36" fill="#141414" stroke="#f5a623" stroke-width="2"/>
+    <circle cx="0" cy="0" r="24" fill="#222222"/>
+    <path d="M-30,-5 L30,5 M-5,-30 L5,30 M-22,22 L22,-22 M-22,-22 L22,22" stroke="#f5a623" stroke-width="2.5" opacity="0.85"/>
+    <circle cx="0" cy="0" r="10" fill="#f5a623"/>
+  </g>
+</svg>
