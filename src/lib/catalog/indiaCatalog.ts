@@ -410,11 +410,11 @@ export async function getModelDetail(
         brandName: demo.brand || demo.name.en.split(" ")[0] || "Tata Motors",
         modelSlug: demo.modelName ? demo.modelName.toLowerCase().replace(/\s+/g, "-") : "nexon",
         modelName: demo.modelName || demo.name.en,
+        source: isTwoWheeler ? "bikedekho" : "cardekho",
         sourceUrl: "",
         minPrice: demo.priceOnRoad,
         maxPrice: demo.priceRangeMax || Math.round(demo.priceOnRoad * 1.35),
         fuelTypes: demo.fuelType ? [demo.fuelType] : ["petrol", "diesel", "cng"],
-        variants: [],
       };
     }
   }
